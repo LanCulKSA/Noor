@@ -62,6 +62,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
 .ob-btn-primary:active{transform:scale(.98)}
 .ob-btn-secondary{background:var(--card);color:var(--text-dim);border-color:var(--border-soft);font-size:14px}
 .learn-more-link{background:none;border:none;color:var(--gold);font-family:'Tajawal',sans-serif;font-size:13.5px;font-weight:600;margin-top:18px;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(201,168,76,0.3)}
+.contact-footer{margin-top:28px;font-size:11.5px;color:var(--text-faint);line-height:1.7;text-align:center}
+.sadaqa-dedication{display:block;color:var(--gold-light);font-size:12px;font-weight:600;margin-bottom:6px;line-height:1.8}
 
 /* ===== ABOUT PAGE ===== */
 #page-about{background:var(--night);padding:0;z-index:25}
@@ -92,6 +94,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
 .field-label{font-size:13px;color:var(--gold);font-weight:700;margin-bottom:6px;margin-top:18px}
 .field-label:first-child{margin-top:0}
 .join-house-found{background:var(--gold-dim);border:1px solid var(--gold);border-radius:var(--r-sm);padding:16px;text-align:center;font-size:18px;font-weight:800;color:var(--gold);margin-bottom:8px}
+
+.forgot-results{padding:0 24px;margin-top:8px}
+.forgot-result-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.frc-icon{font-size:20px}
+.frc-info{flex:1}
+.frc-house{font-size:14px;font-weight:700}
+.frc-members{font-size:11px;color:var(--text-dim);margin-top:2px}
+.frc-code{font-size:18px;font-weight:900;color:var(--gold);letter-spacing:2px}
+.forgot-empty{text-align:center;font-size:13px;color:var(--text-faint);padding:24px}
+.forgot-hint{text-align:center;font-size:12px;color:var(--text-dim);padding:16px 24px;line-height:1.7}
 .setup-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;font-size:16px;color:var(--text);font-family:'Tajawal',sans-serif;outline:none;transition:border-color .2s}
 .setup-input:focus{border-color:var(--gold)}
 .setup-input::placeholder{color:var(--text-faint)}
@@ -256,6 +268,19 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
 
 /* awards mini inside more page */
 .award-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px;margin-bottom:8px}
+
+/* ===== ADMIN ===== */
+.admin-stats-row{display:flex;gap:8px;margin-bottom:16px;padding-top:14px}
+.admin-stat{flex:1;background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px 8px;text-align:center}
+.admin-stat-n{font-size:22px;font-weight:900;color:var(--gold)}
+.admin-stat-l{font-size:11px;color:var(--text-dim);margin-top:2px}
+.admin-house-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px 16px;margin-bottom:8px}
+.admin-house-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.admin-house-name{font-size:15px;font-weight:700;flex:1}
+.admin-house-code{font-size:18px;font-weight:900;color:var(--gold);letter-spacing:2px}
+.admin-house-meta{font-size:11px;color:var(--text-dim);margin-bottom:8px}
+.admin-house-members{display:flex;flex-wrap:wrap;gap:6px}
+.admin-member-chip{background:var(--gold-dim);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text)}
 .award-card.earned{border-color:var(--gold);background:var(--gold-dim)}
 .award-top{display:flex;align-items:center;gap:11px;margin-bottom:9px}
 .award-icon{font-size:26px}
@@ -322,7 +347,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
 
 <!-- ==================== ONBOARDING (simplified to 2 buttons) ==================== -->
 <div class="page active" id="page-onboard">
-  <div class="ob-moon">🌙</div>
+  <div class="ob-moon" onclick="logoTap()">🌙</div>
   <div class="ob-name">نور</div>
   <div class="ob-tagline">بيت عائلتك الروحي</div>
   <div class="ob-ayah">
@@ -335,6 +360,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
     <button class="ob-btn ob-btn-secondary" onclick="goJoin()">🔑 لا، عندي كود بيت من أهلي</button>
   </div>
   <button class="learn-more-link" onclick="showPage('page-about')">✨ ما هو نور؟ اعرف أكثر</button>
+  <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
 </div>
 
 <!-- ==================== ABOUT / VISION PAGE ==================== -->
@@ -406,6 +432,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
     </div>
   </div>
   <button class="setup-cta" onclick="createHouse()">إنشاء البيت ✦</button>
+  <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
 </div>
 
 <!-- ==================== CODE REVEAL ==================== -->
@@ -423,6 +450,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
   </div>
   <button class="share-now-btn" onclick="shareCode()">📤 شارك الكود الآن مع عائلتك</button>
   <button class="setup-cta" onclick="finishSetup()" style="margin-top:auto">دخول البيت ✦</button>
+  <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
 </div>
 
 <!-- ==================== JOIN — STEP 1: CODE ==================== -->
@@ -438,6 +466,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
     <input class="setup-input" id="join-code-input" placeholder="------" maxlength="6" type="tel" style="font-size:24px;text-align:center;letter-spacing:6px"/>
   </div>
   <button class="setup-cta" onclick="verifyJoinCode()">تحقق من الكود ←</button>
+  <button class="learn-more-link" style="align-self:center;margin-top:14px" onclick="showPage('page-forgot')">نسيت الكود؟</button>
+  <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
+</div>
+
+<!-- ==================== FORGOT CODE ==================== -->
+<div class="page" id="page-forgot">
+  <button class="back-link" onclick="showPage('page-join')">← رجوع</button>
+  <div class="setup-header">
+    <div class="setup-icon">🔍</div>
+    <div class="setup-title">نسيت كود بيتك؟</div>
+    <div class="setup-sub">اكتب اسم البيت أو اسمك كما سجّلته، ونبحث لك عنه</div>
+  </div>
+  <div class="setup-body">
+    <div class="field-label">اسم البيت أو اسمك</div>
+    <input class="setup-input" id="forgot-search-input" placeholder="مثلاً: عثمان الخطيب أو سليمان"/>
+  </div>
+  <button class="setup-cta" onclick="searchForgotCode()">بحث 🔍</button>
+  <div id="forgot-results" class="forgot-results"></div>
 </div>
 
 <!-- ==================== JOIN — STEP 2: CONFIRM + NAME/ROLE ==================== -->
@@ -456,6 +502,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
     <input class="setup-input" id="join-role-input" placeholder="مثلاً: الابن، الأخ، الزوجة..."/>
   </div>
   <button class="setup-cta" onclick="doJoin()">سجّل بياناتي وادخل ✦</button>
+  <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
 </div>
 
 <!-- ==================== WHO ==================== -->
@@ -471,7 +518,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
 <!-- ==================== MAIN APP ==================== -->
 <div class="page" id="page-app">
   <div class="topbar">
-    <div class="topbar-logo">نور ✦</div>
+    <div class="topbar-logo" onclick="logoTap()">نور ✦</div>
     <div class="topbar-user" onclick="goWho()">
       <span class="topbar-av" id="top-av">👤</span>
       <span class="topbar-nm" id="top-nm">—</span>
@@ -598,6 +645,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);
     <div id="awards-list"></div>
 
     <button class="house-danger-btn" onclick="resetApp()">🚪 تسجيل خروج من هذا الجهاز</button>
+
+    <div class="contact-footer"><span class="sadaqa-dedication">هذه المنصة صدقة لوالدي عثمان بن سليمان الخطيب (رحمه الله)</span><br>للاستفسارات والمقترحات: سليمان الخطيب<br>📱 ٠٥٥٩٩٦٥٩٢٩</div>
   </div>
 
   <!-- BOTTOM NAV - 3 items only -->
@@ -785,6 +834,99 @@ function showPage(id){
 }
 
 // ======================================================
+// ADMIN PANEL — REAL SUPABASE AUTH
+// ======================================================
+let logoTapCount = 0;
+let logoTapTimer = null;
+let adminHousesCache = [];
+
+function logoTap(){
+  logoTapCount++;
+  clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(()=>{ logoTapCount = 0; }, 2000);
+  if(logoTapCount >= 5){
+    logoTapCount = 0;
+    document.getElementById('admin-email-input').value='';
+    document.getElementById('admin-password-input').value='';
+    document.getElementById('admin-login-modal').classList.add('open');
+  }
+}
+
+async function adminLogin(){
+  const email = document.getElementById('admin-email-input').value.trim();
+  const password = document.getElementById('admin-password-input').value;
+  if(!email || !password){ showToast('أدخل الإيميل وكلمة المرور'); return; }
+
+  showLoading(true);
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    document.getElementById('admin-login-modal').classList.remove('open');
+    showLoading(false);
+    await openAdminPanel();
+  } catch(err){
+    showLoading(false);
+    showToast('إيميل أو كلمة مرور غير صحيحة 🌙');
+    console.error(err);
+  }
+}
+
+async function adminLogout(){
+  await sb.auth.signOut();
+  showPage('page-onboard');
+}
+
+async function openAdminPanel(){
+  showLoading(true);
+  try{
+    const { data: houses, error: e1 } = await sb.from('houses').select('*').order('created_at',{ascending:false});
+    if(e1) throw e1;
+    const { data: members, error: e2 } = await sb.from('members').select('*');
+    if(e2) throw e2;
+    const { data: kheir, error: e3 } = await sb.from('kheir_log').select('id');
+    if(e3) throw e3;
+
+    adminHousesCache = (houses||[]).map(h=>({
+      ...h,
+      members: (members||[]).filter(m=>m.house_code===h.code)
+    }));
+
+    document.getElementById('admin-stat-houses').textContent = houses?.length || 0;
+    document.getElementById('admin-stat-members').textContent = members?.length || 0;
+    document.getElementById('admin-stat-kheir').textContent = kheir?.length || 0;
+
+    document.getElementById('admin-search-input').value='';
+    renderAdminHouses();
+    showLoading(false);
+    showPage('page-admin');
+  } catch(err){
+    showLoading(false);
+    showToast('تعذر تحميل بيانات الأدمن 🌙');
+    console.error(err);
+  }
+}
+
+function renderAdminHouses(){
+  const q = document.getElementById('admin-search-input').value.trim().toLowerCase();
+  const filtered = q ? adminHousesCache.filter(h=>h.name.toLowerCase().includes(q) || h.code.includes(q)) : adminHousesCache;
+  const list = document.getElementById('admin-houses-list');
+  if(!filtered.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--text-faint);font-size:13px;padding:30px">لا توجد نتائج</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(h=>`
+    <div class="admin-house-card">
+      <div class="admin-house-top">
+        <span class="admin-house-name">🏠 بيت ${h.name}</span>
+        <span class="admin-house-code">${h.code}</span>
+      </div>
+      <div class="admin-house-meta">${h.members.length} ${h.members.length===1?'فرد':'أفراد'} · أنشئ ${new Date(h.created_at).toLocaleDateString('ar-SA')}</div>
+      <div class="admin-house-members">${h.members.map(m=>`<span class="admin-member-chip">${m.avatar} ${m.name}</span>`).join('') || '<span style="color:var(--text-faint);font-size:11px">لا يوجد أفراد بعد</span>'}</div>
+    </div>
+  `).join('');
+}
+
+// ======================================================
 // SETUP — CREATE HOUSE
 // ======================================================
 function goSetup(){ showPage('page-setup'); pendingHouseSetup = { members: [] }; renderFamChips(); }
@@ -852,6 +994,64 @@ function finishSetup(){ enterMain(); }
 // ======================================================
 // JOIN EXISTING HOUSE — STEP 1: VERIFY CODE
 // ======================================================
+
+// ======================================================
+// FORGOT CODE — SEARCH BY HOUSE NAME OR MEMBER NAME
+// ======================================================
+async function searchForgotCode(){
+  const q = document.getElementById('forgot-search-input').value.trim();
+  if(!q){ showToast('اكتب اسم البيت أو اسمك'); return; }
+
+  showLoading(true);
+  try{
+    const results = new Map(); // code -> house
+
+    // search by house name
+    const { data: byHouse, error: e1 } = await sb.from('houses').select('*').ilike('name', `%${q}%`);
+    if(e1) throw e1;
+    (byHouse||[]).forEach(h=>results.set(h.code, h));
+
+    // search by member name -> get their house
+    const { data: byMember, error: e2 } = await sb.from('members').select('house_code, name').ilike('name', `%${q}%`);
+    if(e2) throw e2;
+    if(byMember && byMember.length){
+      const codes = [...new Set(byMember.map(m=>m.house_code))];
+      const { data: houses2, error: e3 } = await sb.from('houses').select('*').in('code', codes);
+      if(e3) throw e3;
+      (houses2||[]).forEach(h=>results.set(h.code, h));
+    }
+
+    showLoading(false);
+    renderForgotResults([...results.values()]);
+  } catch(err){
+    showLoading(false);
+    showToast('حصل خطأ، تأكد من الاتصال 🌙');
+    console.error(err);
+  }
+}
+
+async function renderForgotResults(houses){
+  const cont = document.getElementById('forgot-results');
+  if(!houses.length){
+    cont.innerHTML = '<div class="forgot-empty">ما لقينا بيت بهذا الاسم 🌙<br>تأكد من كتابة الاسم صحيح أو اسأل صاحب البيت مباشرة</div>';
+    return;
+  }
+  // get member counts for display
+  const cards = await Promise.all(houses.map(async h=>{
+    const { data: members } = await sb.from('members').select('name').eq('house_code', h.code);
+    const count = members?.length || 0;
+    return `<div class="forgot-result-card">
+      <span class="frc-icon">🏠</span>
+      <div class="frc-info">
+        <div class="frc-house">بيت ${h.name}</div>
+        <div class="frc-members">${count} ${count===1?'فرد':'أفراد'}</div>
+      </div>
+      <div class="frc-code">${h.code}</div>
+    </div>`;
+  }));
+  cont.innerHTML = cards.join('') + '<div class="forgot-hint">إذا هذا بيتك، رجّع واكتب الكود في صفحة الانضمام 🌙</div>';
+}
+
 let verifiedJoinHouse = null;
 
 async function verifyJoinCode(){
@@ -1449,6 +1649,36 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
         💡 بعض الأجهزة تطلع لك نافذة تلقائية تسأل "إضافة نور للشاشة الرئيسية؟" — وقتها فقط اضغط إضافة.
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ==================== ADMIN LOGIN MODAL ==================== -->
+<div class="modal-overlay" id="admin-login-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">🔐 لوحة الأدمن</div>
+    <input class="minp" id="admin-email-input" type="email" placeholder="الإيميل" autocomplete="username"/>
+    <input class="minp" id="admin-password-input" type="password" placeholder="كلمة المرور" autocomplete="current-password"/>
+    <button class="mbtn" onclick="adminLogin()">دخول</button>
+  </div>
+</div>
+
+<!-- ==================== ADMIN DASHBOARD PAGE ==================== -->
+<div class="page" id="page-admin">
+  <div class="topbar">
+    <div class="topbar-logo">🔐 لوحة الأدمن</div>
+    <div class="topbar-user" onclick="adminLogout()">
+      <span class="topbar-nm">خروج</span>
+    </div>
+  </div>
+  <div class="scroll" id="admin-scroll" style="display:block">
+    <div class="admin-stats-row">
+      <div class="admin-stat"><div class="admin-stat-n" id="admin-stat-houses">—</div><div class="admin-stat-l">بيوت</div></div>
+      <div class="admin-stat"><div class="admin-stat-n" id="admin-stat-members">—</div><div class="admin-stat-l">أفراد</div></div>
+      <div class="admin-stat"><div class="admin-stat-n" id="admin-stat-kheir">—</div><div class="admin-stat-l">أعمال خير</div></div>
+    </div>
+    <input class="setup-input" id="admin-search-input" placeholder="🔍 ابحث باسم البيت..." oninput="renderAdminHouses()" style="margin-bottom:14px"/>
+    <div id="admin-houses-list"></div>
   </div>
 </div>
 
