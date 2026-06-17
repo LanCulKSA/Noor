@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="نور">
+<meta name="theme-color" content="#080c12">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>نور</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --night: #080c12;
+  --deep: #0e1520;
+  --card: #131c2b;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-glow: rgba(201,168,76,0.06);
+  --teal: #4a9b8e;
+  --teal-dim: rgba(74,155,142,0.12);
+  --rose: #c97a7a;
+  --rose-dim: rgba(201,122,122,0.1);
+  --text: #ddd5c8;
+  --text-dim: #6b7c96;
+  --text-faint: #2e3d52;
+  --border: rgba(201,168,76,0.1);
+  --border-soft: rgba(255,255,255,0.04);
+  --r: 14px;
+  --r-sm: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Tajawal',sans-serif;background:var(--night);color:var(--text);overflow:hidden}
+
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite;opacity:var(--o)}
+@keyframes twinkle{0%,100%{opacity:var(--o)}50%{opacity:0.05}}
+
+.page{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;overflow:hidden}
+.page.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 110px}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ===== ONBOARD ===== */
+#page-onboard{background:var(--night);align-items:center;justify-content:center;padding:32px 24px;text-align:center;z-index:20}
+.ob-moon{font-size:72px;animation:moonpulse 3s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(201,168,76,0.5))}
+@keyframes moonpulse{0%,100%{filter:drop-shadow(0 0 20px rgba(201,168,76,0.4))}50%{filter:drop-shadow(0 0 45px rgba(201,168,76,0.7))}}
+.ob-name{font-size:58px;font-weight:900;color:var(--gold);line-height:1;margin-top:6px;letter-spacing:-2px}
+.ob-tagline{font-size:15px;color:var(--text-dim);margin-top:8px;font-weight:300}
+.ob-ayah{background:var(--gold-glow);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin:28px 0;max-width:320px}
+.ob-ayah-text{font-size:16px;color:var(--gold-light);line-height:2}
+.ob-ayah-ref{font-size:11px;color:var(--text-faint);margin-top:6px}
+.ob-choices{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+.ob-question{font-size:14px;color:var(--text-dim);font-weight:600;margin-bottom:4px}
+.ob-btn{border-radius:var(--r);padding:17px;font-size:16px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:all .2s;border:1px solid}
+.ob-btn-primary{background:linear-gradient(135deg,var(--gold),#a87e30);color:#080c12;border-color:transparent;box-shadow:0 4px 20px rgba(201,168,76,0.25)}
+.ob-btn-primary:active{transform:scale(.98)}
+.ob-btn-secondary{background:var(--card);color:var(--text-dim);border-color:var(--border-soft);font-size:14px}
+.learn-more-link{background:none;border:none;color:var(--gold);font-family:'Tajawal',sans-serif;font-size:13.5px;font-weight:600;margin-top:18px;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(201,168,76,0.3)}
+
+/* ===== ABOUT PAGE ===== */
+#page-about{background:var(--night);padding:0;z-index:25}
+.about-scroll{padding:50px 22px 40px}
+.about-hero{text-align:center;margin-bottom:28px}
+.about-hero-moon{font-size:48px;filter:drop-shadow(0 0 24px rgba(201,168,76,0.4))}
+.about-hero-title{font-size:34px;font-weight:900;color:var(--gold);margin-top:4px}
+.about-hero-sub{font-size:13px;color:var(--text-dim);margin-top:2px}
+.about-block{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.about-block.highlight{background:var(--gold-dim);border-color:var(--border)}
+.about-block.highlight.rose{background:var(--rose-dim);border-color:rgba(201,122,122,0.2)}
+.about-block-icon{font-size:26px;margin-bottom:8px}
+.about-block-title{font-size:15px;font-weight:800;margin-bottom:6px;color:var(--text)}
+.about-block.highlight .about-block-title{color:var(--gold)}
+.about-block.highlight.rose .about-block-title{color:var(--rose)}
+.about-block-text{font-size:13.5px;line-height:1.9;color:var(--text-dim)}
+.about-block-text b{color:var(--text);font-weight:700}
+.about-cta{margin-top:20px}
+.about-cta .ob-btn{width:100%}
+
+/* ===== SIMPLE SETUP (single screen) ===== */
+#page-setup{background:var(--night);padding:0;z-index:20}
+.setup-header{padding:50px 24px 20px;text-align:center}
+.setup-icon{font-size:40px;margin-bottom:8px}
+.setup-title{font-size:22px;font-weight:800}
+.setup-sub{font-size:13px;color:var(--text-dim);margin-top:4px}
+.setup-body{padding:8px 24px 30px;flex:1;overflow-y:auto}
+.field-label{font-size:13px;color:var(--gold);font-weight:700;margin-bottom:6px;margin-top:18px}
+.field-label:first-child{margin-top:0}
+.join-house-found{background:var(--gold-dim);border:1px solid var(--gold);border-radius:var(--r-sm);padding:16px;text-align:center;font-size:18px;font-weight:800;color:var(--gold);margin-bottom:8px}
+.setup-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;font-size:16px;color:var(--text);font-family:'Tajawal',sans-serif;outline:none;transition:border-color .2s}
+.setup-input:focus{border-color:var(--gold)}
+.setup-input::placeholder{color:var(--text-faint)}
+.fam-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fam-chip{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border-soft);border-radius:20px;padding:7px 12px;font-size:13px}
+.fam-chip button{background:none;border:none;color:var(--text-faint);font-size:15px;cursor:pointer;padding:0;margin-right:2px}
+.add-fam-inline{display:flex;gap:8px;margin-top:10px}
+.add-fam-inline input{flex:1}
+.add-fam-btn{background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--r-sm);padding:0 18px;color:var(--gold);font-size:20px;cursor:pointer;font-weight:700}
+.setup-cta{margin:20px 24px 30px;background:linear-gradient(135deg,var(--gold),#a87e30);color:#080c12;border:none;border-radius:var(--r);padding:17px;font-size:17px;font-weight:800;font-family:'Tajawal',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,0.2)}
+.back-link{background:none;border:none;color:var(--text-dim);font-family:'Tajawal',sans-serif;font-size:14px;cursor:pointer;padding:10px;align-self:flex-start;margin:6px 10px 0}
+
+/* code reveal */
+.code-reveal{background:var(--gold-dim);border:1px solid var(--gold);border-radius:var(--r);padding:24px;text-align:center;margin:0 24px 16px}
+.code-reveal-emoji{font-size:36px;margin-bottom:8px}
+.code-reveal-lbl{font-size:13px;color:var(--text-dim);margin-bottom:6px}
+.code-reveal-val{font-size:34px;font-weight:900;color:var(--gold);letter-spacing:6px;margin-bottom:8px}
+.code-reveal-hint{font-size:12px;color:var(--text-dim);line-height:1.6}
+.share-now-btn{margin:0 24px 12px;background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px;font-size:14px;font-weight:700;color:var(--gold);font-family:'Tajawal',sans-serif;cursor:pointer}
+
+/* ===== WHO ===== */
+#page-who{background:var(--night);padding:0;z-index:20}
+.who-header{padding:50px 24px 20px;text-align:center}
+.who-title{font-size:22px;font-weight:800}
+.who-sub{font-size:13px;color:var(--text-dim);margin-top:4px}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 24px 20px;overflow-y:auto;flex:1}
+.who-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:20px 14px;text-align:center;cursor:pointer;transition:all .15s}
+.who-card.sel{border-color:var(--gold);background:var(--gold-dim)}
+.who-card-avatar{font-size:34px;margin-bottom:8px}
+.who-card-name{font-size:14px;font-weight:700}
+.who-card-role{font-size:11px;color:var(--text-dim);margin-top:2px}
+.who-enter{margin:0 24px 30px;background:linear-gradient(135deg,var(--gold),#a87e30);color:#080c12;border:none;border-radius:var(--r);padding:17px;font-size:17px;font-weight:800;font-family:'Tajawal',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,0.2)}
+
+/* ===== TOPBAR ===== */
+.topbar{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-logo{font-size:19px;font-weight:900;color:var(--gold)}
+.topbar-user{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:40px;padding:6px 12px 6px 8px;cursor:pointer}
+.topbar-av{font-size:16px}
+.topbar-nm{font-size:13px;font-weight:600}
+
+.date-strip{text-align:center;padding:14px 0 16px}
+.date-hijri{font-size:19px;font-weight:700;color:var(--gold-light)}
+.date-miladi{font-size:12px;color:var(--text-dim);margin-top:2px}
+
+/* streak */
+.streak{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
+.streak-fire{font-size:28px}
+.streak-n{font-size:26px;font-weight:900;color:var(--gold);line-height:1}
+.streak-lbl{font-size:10px;color:var(--text-dim)}
+.streak-msg{flex:1;font-size:13px;color:var(--text);font-weight:500;text-align:left}
+
+/* section header — collapsible feel but always open, just clear dividers */
+.sec{margin-bottom:22px}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sec-icon{font-size:17px}
+.sec-title{font-size:14px;font-weight:800;color:var(--text)}
+.sec-count{font-size:11px;color:var(--text-dim);margin-right:auto}
+
+.ibadah-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.icard{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:13px 12px 11px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;user-select:none}
+.icard::after{content:'';position:absolute;inset:0;background:var(--gold-dim);opacity:0;transition:opacity .25s}
+.icard.done{border-color:rgba(201,168,76,0.35)}
+.icard.done::after{opacity:1}
+.icard:active{transform:scale(.96)}
+.icard-check{position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--text-faint);display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;z-index:1}
+.icard.done .icard-check{background:var(--gold);border-color:var(--gold);color:#080c12;font-weight:700}
+.icard-icon{font-size:22px;margin-bottom:5px;display:block;position:relative;z-index:1}
+.icard-name{font-size:12.5px;font-weight:700;position:relative;z-index:1}
+.icard-sub{font-size:9.5px;color:var(--text-dim);margin-top:1px;position:relative;z-index:1}
+
+/* quran inline */
+.quran-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:15px}
+.quran-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.quran-lbl{font-size:13.5px;font-weight:700}
+.quran-count{font-size:22px;font-weight:900;color:var(--gold);line-height:1}
+.quran-count span{font-size:11px;color:var(--text-dim);font-weight:400}
+.pbar{height:5px;background:var(--border-soft);border-radius:99px;overflow:hidden;margin-bottom:9px}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:99px;transition:width .5s ease}
+.quran-btns{display:flex;gap:6px}
+.qbtn{flex:1;background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 6px;font-size:12.5px;font-weight:700;color:var(--gold);cursor:pointer;font-family:'Tajawal',sans-serif}
+.qbtn:active{transform:scale(.96)}
+
+/* kheir card big-ish on home */
+.kheir-home{background:linear-gradient(135deg,#0e1e16,#0e1525);border:1px solid rgba(74,155,142,0.2);border-radius:var(--r);padding:16px;cursor:pointer}
+.kheir-home-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.kheir-home-emoji{font-size:26px}
+.kheir-home-title{font-size:14px;font-weight:700}
+.kheir-home-sub{font-size:11px;color:var(--text-dim)}
+.kheir-home-num{margin-right:auto;text-align:center}
+.kheir-home-num b{font-size:24px;color:var(--teal);display:block;line-height:1}
+.kheir-home-num span{font-size:9.5px;color:var(--text-dim)}
+.kheir-home-btn{width:100%;background:var(--teal-dim);border:1px solid rgba(74,155,142,0.25);border-radius:var(--r-sm);padding:11px;font-size:13.5px;font-weight:700;color:var(--teal);cursor:pointer;font-family:'Tajawal',sans-serif}
+
+/* family mini */
+.fam-mini{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);overflow:hidden}
+.fam-row{display:flex;align-items:center;padding:11px 14px;gap:10px;border-bottom:1px solid var(--border-soft)}
+.fam-row:last-child{border-bottom:none}
+.fam-av{font-size:19px}
+.fam-inf{flex:1}
+.fam-nm{font-size:13px;font-weight:600}
+.fam-sc{font-size:10px;color:var(--text-dim)}
+.fam-bar-wrap{width:60px;height:5px;background:var(--border-soft);border-radius:99px;overflow:hidden}
+.fam-bar{height:100%;background:var(--gold);border-radius:99px}
+
+/* ===== BOTTOM NAV - simplified to 3 ===== */
+.bnav{position:absolute;bottom:0;left:0;right:0;background:rgba(8,12,18,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border-soft);display:flex;padding:9px 0 env(safe-area-inset-bottom,9px);flex-shrink:0}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;background:none;border:none;font-family:'Tajawal',sans-serif}
+.bni-icon{font-size:22px;line-height:1;transition:filter .2s}
+.bni-lbl{font-size:10.5px;color:var(--text-faint);font-weight:600}
+.bni.active .bni-lbl{color:var(--gold)}
+.bni.active .bni-icon{filter:drop-shadow(0 0 6px rgba(201,168,76,0.5))}
+
+/* ===== KHEIR PAGE ===== */
+.kheir-hero{background:linear-gradient(135deg,#0a1a12,#0e1525);border:1px solid rgba(74,155,142,0.2);border-radius:var(--r);padding:24px 20px;text-align:center;margin-bottom:14px}
+.kheir-hero-icon{font-size:38px;margin-bottom:6px}
+.kheir-hero-title{font-size:17px;font-weight:800;color:var(--gold)}
+.kheir-hero-sub{font-size:12.5px;color:var(--text-dim);margin-bottom:14px}
+.kheir-hero-num{font-size:48px;font-weight:900;color:var(--teal);line-height:1}
+.kheir-hero-numlbl{font-size:11px;color:var(--text-dim);margin-top:4px}
+.kheir-add-big{width:100%;background:linear-gradient(135deg,#1a4a30,#1a3040);border:1px solid rgba(74,155,142,0.3);border-radius:var(--r);padding:15px;font-size:15px;font-weight:800;color:var(--teal);cursor:pointer;font-family:'Tajawal',sans-serif;margin-bottom:16px}
+.kheir-log-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-soft)}
+.kheir-log-item:last-child{border-bottom:none}
+.kli-icon{font-size:19px}
+.kli-text{flex:1}
+.kli-type{font-size:12.5px;font-weight:600}
+.kli-hdiya{font-size:10.5px;color:var(--gold);margin-top:1px}
+.kli-right{text-align:left}
+.kli-by{font-size:10.5px;color:var(--text-dim)}
+.kli-date{font-size:9.5px;color:var(--text-faint)}
+
+/* deceased inside kheir page now */
+.dec-section{margin-top:22px}
+.dec-card{background:linear-gradient(135deg,#1a1220,#0e1525);border:1px solid rgba(201,122,122,0.15);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer}
+.dec-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dec-icon{font-size:19px}
+.dec-name{font-size:14px;font-weight:700}
+.dec-rel{font-size:10.5px;color:var(--text-dim)}
+.dec-deeds{display:flex;gap:5px;flex-wrap:wrap}
+.deed-tag{background:var(--rose-dim);border:1px solid rgba(201,122,122,0.15);border-radius:20px;padding:3px 9px;font-size:10.5px;color:var(--rose)}
+.dec-empty{font-size:11px;color:var(--text-faint);font-style:italic}
+.arham-add-btn{width:100%;background:var(--rose-dim);border:1px solid rgba(201,122,122,0.2);border-radius:var(--r-sm);padding:12px;font-size:13.5px;font-weight:700;color:var(--rose);cursor:pointer;font-family:'Tajawal',sans-serif;margin-bottom:12px}
+
+/* ===== MORE / HOUSE PAGE ===== */
+.house-hero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:14px}
+.house-name{font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px}
+.house-code-box{background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin:10px 0}
+.house-code-lbl{font-size:10.5px;color:var(--text-dim);margin-bottom:4px}
+.house-code-val{font-size:26px;font-weight:900;color:var(--gold);letter-spacing:5px}
+.house-share-btn{background:var(--gold-dim);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 20px;font-size:13px;font-weight:700;color:var(--gold);cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:6px}
+.house-member{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.hm-av{font-size:25px}
+.hm-inf{flex:1}
+.hm-name{font-size:14px;font-weight:700}
+.hm-role{font-size:10.5px;color:var(--text-dim)}
+.hm-score{font-size:21px;font-weight:900;color:var(--gold)}
+.hm-score-lbl{font-size:9px;color:var(--text-dim)}
+.more-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:15px 16px;margin-bottom:8px;cursor:pointer}
+.more-row-icon{font-size:20px}
+.more-row-text{flex:1;font-size:14px;font-weight:600}
+.more-row-arrow{color:var(--text-faint)}
+.house-danger-btn{width:100%;background:transparent;border:1px solid rgba(201,122,122,0.2);border-radius:var(--r-sm);padding:12px;font-size:13.5px;color:var(--rose);cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:20px}
+
+/* awards mini inside more page */
+.award-card{background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.award-card.earned{border-color:var(--gold);background:var(--gold-dim)}
+.award-top{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.award-icon{font-size:26px}
+.award-name{font-size:14px;font-weight:700}
+.award-desc{font-size:11px;color:var(--text-dim)}
+.award-earned-badge{margin-right:auto;font-size:17px}
+
+/* ===== MODALS ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--deep);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:20px 20px 40px;animation:slideup .3s ease;max-height:85vh;overflow-y:auto}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:36px;height:4px;background:var(--text-faint);border-radius:99px;margin:0 auto 18px}
+.mtitle{font-size:18px;font-weight:800;margin-bottom:14px}
+.msel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:15px;color:var(--text);font-family:'Tajawal',sans-serif;margin-bottom:10px;outline:none}
+.minp{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:15px;color:var(--text);font-family:'Tajawal',sans-serif;margin-bottom:10px;outline:none}
+.minp::placeholder{color:var(--text-faint)}
+.mchips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.mchip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif;color:var(--text)}
+.mchip.sel{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.mbtn{width:100%;background:linear-gradient(135deg,var(--gold),#a87e30);color:#080c12;border:none;border-radius:var(--r);padding:14px;font-size:16px;font-weight:800;font-family:'Tajawal',sans-serif;cursor:pointer}
+.mlabel{font-size:12px;color:var(--text-dim);margin-bottom:7px}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-70px);background:var(--card);border:1px solid var(--gold);border-radius:40px;padding:10px 20px;font-size:14px;font-weight:700;color:var(--gold);z-index:200;transition:transform .3s ease;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.5);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#loading-overlay{position:fixed;inset:0;background:var(--night);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#loading-overlay .lm{font-size:50px;animation:moonpulse 1.5s ease-in-out infinite}
+#loading-overlay .lt{font-size:13px;color:var(--text-dim)}
+.spin{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* INSTALL */
+.install-banner{background:linear-gradient(135deg,#1a3a2a,#1a2a3a);border:1px solid rgba(74,155,142,0.3);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;cursor:pointer}
+.install-banner-icon{font-size:24px}
+.install-banner-text{flex:1}
+.install-banner-title{font-size:13.5px;font-weight:700;color:var(--text)}
+.install-banner-sub{font-size:11px;color:var(--text-dim)}
+.install-banner-arrow{color:var(--teal);font-size:18px}
+.install-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r);padding:14px 15px;margin-bottom:8px;cursor:pointer}
+.install-row-icon{font-size:20px}
+.install-row-text{flex:1;font-size:14px;font-weight:600}
+
+.install-steps{margin:8px 0 16px}
+.install-step{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border-soft)}
+.install-step:last-child{border-bottom:none}
+.install-step-num{width:26px;height:26px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.install-step-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.install-step-text{font-size:14px;line-height:1.6;flex:1}
+.install-step-text b{color:var(--gold-light)}
+.platform-tabs{display:flex;gap:8px;margin-bottom:16px}
+.platform-tab{flex:1;background:var(--card);border:1px solid var(--border-soft);border-radius:var(--r-sm);padding:10px;text-align:center;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:var(--text-dim)}
+.platform-tab.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="loading-overlay">
+  <div class="lm">🌙</div>
+  <div class="spin"></div>
+  <div class="lt">نور يتجهز...</div>
+</div>
+<div id="stars"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ==================== ONBOARDING (simplified to 2 buttons) ==================== -->
+<div class="page active" id="page-onboard">
+  <div class="ob-moon">🌙</div>
+  <div class="ob-name">نور</div>
+  <div class="ob-tagline">بيت عائلتك الروحي</div>
+  <div class="ob-ayah">
+    <div class="ob-ayah-text">﴿ وَمَا تُقَدِّمُوا لِأَنفُسِكُم مِّنْ خَيْرٍ تَجِدُوهُ عِندَ اللَّهِ ﴾</div>
+    <div class="ob-ayah-ref">سورة البقرة: ١١٠</div>
+  </div>
+  <div class="ob-question">هذي أول مرة لك في نور؟</div>
+  <div class="ob-choices">
+    <button class="ob-btn ob-btn-primary" onclick="goSetup()">🏠 نعم، أنشئ بيت عائلتي الآن</button>
+    <button class="ob-btn ob-btn-secondary" onclick="goJoin()">🔑 لا، عندي كود بيت من أهلي</button>
+  </div>
+  <button class="learn-more-link" onclick="showPage('page-about')">✨ ما هو نور؟ اعرف أكثر</button>
+</div>
+
+<!-- ==================== ABOUT / VISION PAGE ==================== -->
+<div class="page" id="page-about">
+  <button class="back-link" onclick="showPage('page-onboard')">← رجوع</button>
+  <div class="scroll about-scroll">
+    <div class="about-hero">
+      <div class="about-hero-moon">🌙</div>
+      <div class="about-hero-title">نور</div>
+      <div class="about-hero-sub">بيت عائلتك الروحي</div>
+    </div>
+
+    <div class="about-block">
+      <div class="about-block-icon">💭</div>
+      <div class="about-block-title">الفكرة</div>
+      <div class="about-block-text">كل واحد فينا يحب يحافظ على صلاته وعباداته، بس وحيد قد يفقد الحافز. <b>نور</b> يجمع البيت كله في مكان واحد — كل فرد يتابع نفسه، ويشوف عائلته معه في نفس الطريق.</div>
+    </div>
+
+    <div class="about-block">
+      <div class="about-block-icon">🕌</div>
+      <div class="about-block-title">عبادتك، بطريقتك</div>
+      <div class="about-block-text">سجّل سننك الرواتب، الوتر، الضحى، أذكارك، وردك من القرآن، والصيام — كل هذا يبني <b>سلسلة أيامك (Streak)</b> ويحفّزك تكمل بدون توقف.</div>
+    </div>
+
+    <div class="about-block">
+      <div class="about-block-icon">👨‍👩‍👧‍👦</div>
+      <div class="about-block-title">عائلتك معك</div>
+      <div class="about-block-text">كل أهل بيتك يدخلون بنفس الكود ويسجلون عباداتهم. تشوف ميزان كل فرد، وتحفّزون بعض بدون أي ضغط — مجرد حضور لطيف يذكّركم ببعض.</div>
+    </div>
+
+    <div class="about-block highlight">
+      <div class="about-block-icon">🤲</div>
+      <div class="about-block-title">صندوق الخير المشترك</div>
+      <div class="about-block-text">هذا قلب نور. أي عمل خير — صدقة، إطعام، دعاء، مساعدة، عيادة مريض — تسجّله في <b>صندوق خير واحد لكل البيت</b>. كل فرد يضيف خيره، والكل يشوف أثر العائلة مجتمعة، بنية واحدة بين الجميع.</div>
+    </div>
+
+    <div class="about-block highlight rose">
+      <div class="about-block-icon">🤍</div>
+      <div class="about-block-title">إهداء الأجر للأحباب</div>
+      <div class="about-block-text">تقدر تختار "أهدِ هذا الخير لـ..." وتوجهه لأحد أفراد العائلة، أو لمن رحلوا عنّا — والدك، جدتك، من تحب. تضيف اسمهم في "الأرحام"، وكل مرة تدعو لهم أو تتصدق عنهم يبقى الأثر محفوظاً في سجلهم — صدقة جارية لا تنقطع.</div>
+    </div>
+
+    <div class="about-cta">
+      <button class="ob-btn ob-btn-primary" onclick="showPage('page-onboard')">ابدأ الآن ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SETUP — ONE SCREEN ==================== -->
+<div class="page" id="page-setup">
+  <button class="back-link" onclick="showPage('page-onboard')">← رجوع</button>
+  <div class="setup-header">
+    <div class="setup-icon">🏠</div>
+    <div class="setup-title">أنشئ بيت عائلتك</div>
+    <div class="setup-sub">خطوة واحدة بسيطة، وبعدها ترسل الكود لأهلك</div>
+  </div>
+  <div class="setup-body">
+    <div class="field-label">اسم البيت</div>
+    <input class="setup-input" id="house-name-input" placeholder="مثلاً: بيت عثمان الخطيب"/>
+
+    <div class="field-label">اسمك</div>
+    <input class="setup-input" id="your-name-input" placeholder="اسمك"/>
+
+    <div class="field-label">أفراد عائلتك (اختياري — تقدر تضيفهم بعدين)</div>
+    <div class="fam-chip-row" id="fam-chip-row"></div>
+    <div class="add-fam-inline">
+      <input class="setup-input" id="nm-inp" placeholder="اسم فرد من العائلة"/>
+      <button class="add-fam-btn" onclick="addMemberSetup()">+</button>
+    </div>
+  </div>
+  <button class="setup-cta" onclick="createHouse()">إنشاء البيت ✦</button>
+</div>
+
+<!-- ==================== CODE REVEAL ==================== -->
+<div class="page" id="page-code">
+  <div class="setup-header">
+    <div class="setup-icon">✦</div>
+    <div class="setup-title">بيتك جاهز!</div>
+    <div class="setup-sub">شارك هذا الكود مع عائلتك الآن</div>
+  </div>
+  <div class="code-reveal">
+    <div class="code-reveal-emoji">🔑</div>
+    <div class="code-reveal-lbl">كود بيتكم</div>
+    <div class="code-reveal-val" id="house-code-display">------</div>
+    <div class="code-reveal-hint">كل فرد من عائلتك يفتح هذا الرابط، يضغط "عندي كود بيت"، ويكتب هذا الكود — وبس</div>
+  </div>
+  <button class="share-now-btn" onclick="shareCode()">📤 شارك الكود الآن مع عائلتك</button>
+  <button class="setup-cta" onclick="finishSetup()" style="margin-top:auto">دخول البيت ✦</button>
+</div>
+
+<!-- ==================== JOIN — STEP 1: CODE ==================== -->
+<div class="page" id="page-join">
+  <button class="back-link" onclick="showPage('page-onboard')">← رجوع</button>
+  <div class="setup-header">
+    <div class="setup-icon">🔑</div>
+    <div class="setup-title">ادخل كود البيت</div>
+    <div class="setup-sub">هذا الكود المكوّن من ٦ أرقام يعطيك إياه أهلك — هو نفسه الذي ظهر لهم عند إنشاء البيت</div>
+  </div>
+  <div class="setup-body">
+    <div class="field-label">الكود</div>
+    <input class="setup-input" id="join-code-input" placeholder="------" maxlength="6" type="tel" style="font-size:24px;text-align:center;letter-spacing:6px"/>
+  </div>
+  <button class="setup-cta" onclick="verifyJoinCode()">تحقق من الكود ←</button>
+</div>
+
+<!-- ==================== JOIN — STEP 2: CONFIRM + NAME/ROLE ==================== -->
+<div class="page" id="page-join-confirm">
+  <button class="back-link" onclick="showPage('page-join')">← رجوع</button>
+  <div class="setup-header">
+    <div class="setup-icon">🏠</div>
+    <div class="setup-title">وجدنا بيتكم!</div>
+    <div class="setup-sub">تأكد إن هذا بيتك الصحيح قبل لا تكمل</div>
+  </div>
+  <div class="setup-body">
+    <div class="join-house-found" id="join-house-found">بيت —</div>
+    <div class="field-label">اسمك</div>
+    <input class="setup-input" id="join-name-input" placeholder="اسمك الكامل"/>
+    <div class="field-label">دورك في البيت</div>
+    <input class="setup-input" id="join-role-input" placeholder="مثلاً: الابن، الأخ، الزوجة..."/>
+  </div>
+  <button class="setup-cta" onclick="doJoin()">سجّل بياناتي وادخل ✦</button>
+</div>
+
+<!-- ==================== WHO ==================== -->
+<div class="page" id="page-who">
+  <div class="who-header">
+    <div class="who-title" id="who-house-name">بيت —</div>
+    <div class="who-sub">اختر اسمك</div>
+  </div>
+  <div class="who-grid" id="who-grid"></div>
+  <button class="who-enter" onclick="enterApp()">دخول ✦</button>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div class="page" id="page-app">
+  <div class="topbar">
+    <div class="topbar-logo">نور ✦</div>
+    <div class="topbar-user" onclick="goWho()">
+      <span class="topbar-av" id="top-av">👤</span>
+      <span class="topbar-nm" id="top-nm">—</span>
+    </div>
+  </div>
+
+  <!-- TODAY: everything on one scroll, no time-of-day tabs -->
+  <div class="scroll" id="scroll-today">
+    <div class="install-banner" id="install-banner" onclick="openInstallModal()" style="display:none">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <div class="install-banner-title">ثبّت نور على شاشتك الرئيسية</div>
+        <div class="install-banner-sub">يفتح بضغطة واحدة مثل أي تطبيق</div>
+      </div>
+      <span class="install-banner-arrow">←</span>
+    </div>
+    <div class="date-strip">
+      <div class="date-hijri" id="hijri"></div>
+      <div class="date-miladi" id="miladi"></div>
+    </div>
+
+    <div class="streak" id="streak-bar">
+      <div class="streak-fire">🔥</div>
+      <div>
+        <div class="streak-n" id="streak-n">0</div>
+        <div class="streak-lbl">يوم متتالي</div>
+      </div>
+      <div class="streak-msg" id="streak-msg">ابدأ يومك بخير</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">🕌</span><span class="sec-title">الصلاة</span><span class="sec-count" id="cnt-salah"></span></div>
+      <div class="ibadah-grid" id="grid-salah"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">🤲</span><span class="sec-title">الأذكار</span><span class="sec-count" id="cnt-athkar"></span></div>
+      <div class="ibadah-grid" id="grid-athkar"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">📖</span><span class="sec-title">القرآن</span></div>
+      <div class="quran-card">
+        <div class="quran-top">
+          <div class="quran-lbl">ورد اليوم</div>
+          <div class="quran-count"><span id="q-read">0</span> <span>/ <span id="q-goal">5</span> ص</span></div>
+        </div>
+        <div class="pbar"><div class="pbar-fill" id="q-bar" style="width:0%"></div></div>
+        <div class="quran-btns">
+          <button class="qbtn" onclick="qPage(-1)">− صفحة</button>
+          <button class="qbtn" onclick="qPage(1)">+ صفحة</button>
+          <button class="qbtn" onclick="qPage(5)">+ ٥</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">🌙</span><span class="sec-title">الصيام والقيام</span><span class="sec-count" id="cnt-extra"></span></div>
+      <div class="ibadah-grid" id="grid-extra"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">🤲</span><span class="sec-title">صندوق الخير</span></div>
+      <div class="kheir-home" onclick="switchTab('kheir')">
+        <div class="kheir-home-top">
+          <span class="kheir-home-emoji">🤲</span>
+          <div>
+            <div class="kheir-home-title">صندوق الخير العائلي</div>
+            <div class="kheir-home-sub">كل ريال أثر باقٍ</div>
+          </div>
+          <div class="kheir-home-num"><b id="kheir-mini-count">0</b><span>هذا الشهر</span></div>
+        </div>
+        <button class="kheir-home-btn" onclick="event.stopPropagation();openKheirModal()">+ سجّل خيرًا الآن</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span class="sec-icon">👨‍👩‍👧‍👦</span><span class="sec-title">عائلتك اليوم</span></div>
+      <div class="fam-mini" id="fam-mini-list"></div>
+    </div>
+  </div>
+
+  <!-- KHEIR PAGE (now also holds الأرحام inside it) -->
+  <div class="scroll" id="scroll-kheir" style="display:none">
+    <div class="date-strip" style="padding-top:18px"><div class="date-hijri" style="font-size:17px">صندوق الخير</div></div>
+    <div class="kheir-hero">
+      <div class="kheir-hero-icon">🤲</div>
+      <div class="kheir-hero-title">أجركم مشترك، نيّتكم واحدة</div>
+      <div class="kheir-hero-num" id="kheir-total">0</div>
+      <div class="kheir-hero-numlbl">عمل خير هذا الشهر</div>
+    </div>
+    <button class="kheir-add-big" onclick="openKheirModal()">🤲 سجّل خيرًا جديدًا</button>
+
+    <div class="sec-head"><span class="sec-icon">📿</span><span class="sec-title">آخر الخيرات</span></div>
+    <div id="kheir-log"></div>
+
+    <div class="dec-section">
+      <div class="sec-head"><span class="sec-icon">🤍</span><span class="sec-title">من رحلوا — رحمهم الله</span></div>
+      <button class="arham-add-btn" onclick="openDecModal()">+ أضف من رحل</button>
+      <div id="dec-list"></div>
+    </div>
+  </div>
+
+  <!-- MORE PAGE: house + awards + settings combined -->
+  <div class="scroll" id="scroll-more" style="display:none">
+    <div class="install-row" onclick="openInstallModal()">
+      <span class="install-row-icon">📲</span>
+      <span class="install-row-text">ثبّت نور على شاشتك الرئيسية</span>
+      <span style="color:var(--text-faint)">←</span>
+    </div>
+    <div class="house-hero">
+      <div class="house-name" id="house-display-name">—</div>
+      <div class="house-code-box">
+        <div class="house-code-lbl">كود البيت</div>
+        <div class="house-code-val" id="house-display-code">—</div>
+      </div>
+      <button class="house-share-btn" onclick="shareCode()">📤 شارك الكود</button>
+    </div>
+
+    <div class="sec-head"><span class="sec-icon">👥</span><span class="sec-title">أفراد البيت</span></div>
+    <div id="house-members-list"></div>
+
+    <div class="sec-head" style="margin-top:18px"><span class="sec-icon">🏅</span><span class="sec-title">إنجازاتك</span></div>
+    <div id="awards-list"></div>
+
+    <button class="house-danger-btn" onclick="resetApp()">🚪 تسجيل خروج من هذا الجهاز</button>
+  </div>
+
+  <!-- BOTTOM NAV - 3 items only -->
+  <div class="bnav">
+    <button class="bni active" onclick="switchTab('today')" id="nav-today">
+      <span class="bni-icon">🌙</span><span class="bni-lbl">اليوم</span>
+    </button>
+    <button class="bni" onclick="switchTab('kheir')" id="nav-kheir">
+      <span class="bni-icon">🤲</span><span class="bni-lbl">الخير والأرحام</span>
+    </button>
+    <button class="bni" onclick="switchTab('more')" id="nav-more">
+      <span class="bni-icon">🏠</span><span class="bni-lbl">بيتي</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+<div class="modal-overlay" id="kheir-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">سجّل خيرًا 🤲</div>
+    <select class="msel" id="kheir-type">
+      <option>💰 صدقة مالية</option>
+      <option>🍽️ إطعام</option>
+      <option>🤲 دعاء لأحد</option>
+      <option>🤝 مساعدة شخص</option>
+      <option>📚 نشر علم</option>
+      <option>🌱 صدقة جارية</option>
+      <option>🏥 عيادة مريض</option>
+      <option>😊 كلمة طيبة</option>
+    </select>
+    <input class="minp" id="kheir-amount" type="number" placeholder="المبلغ بالريال (اختياري)"/>
+    <div class="mlabel">أهدِ الأجر لـ (اختياري):</div>
+    <div class="mchips" id="kheir-hdiya-chips"></div>
+    <button class="mbtn" onclick="saveKheir()">سجّل ✦</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="dec-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">أضف من رحل 🤍</div>
+    <input class="minp" id="dec-name" placeholder="الاسم الكريم"/>
+    <input class="minp" id="dec-rel" placeholder="صلة القرابة (أب، أم، جد...)"/>
+    <button class="mbtn" onclick="saveDec()">أضف 🤍</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deed-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">أهدِ عملًا صالحًا 🌸</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">لـ <strong id="deed-target" style="color:var(--rose)">—</strong></div>
+    <select class="msel" id="deed-type">
+      <option>🤲 دعاء</option>
+      <option>📖 قراءة قرآن</option>
+      <option>💰 صدقة عنه</option>
+      <option>🌱 صدقة جارية</option>
+    </select>
+    <button class="mbtn" onclick="saveDeed()">أهدِ الأجر ✦</button>
+  </div>
+</div>
+
+<script>
+// ======================================================
+// SUPABASE SETUP
+// ======================================================
+const SUPABASE_URL = 'https://lxqwjxfexplefjcxxnqq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XftFwaRPmvti3_rOqmAbPw_s0FI-q9G';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const AVATARS = ['👨‍💼','👩','👦','👧','👴','👵','🧒','👨','👩‍💼'];
+
+const SALAH = [
+  {id:'fajr_qabli', name:'قبلية الفجر', sub:'ركعتان', icon:'🌅'},
+  {id:'dhuhr_qabli', name:'قبلية الظهر', sub:'٤ ركعات', icon:'☀️'},
+  {id:'dhuhr_badi', name:'بعدية الظهر', sub:'ركعتان', icon:'☀️'},
+  {id:'asr_qabli', name:'قبلية العصر', sub:'٤ ركعات', icon:'🌤️'},
+  {id:'maghrib_badi', name:'بعدية المغرب', sub:'ركعتان', icon:'🌇'},
+  {id:'isha_badi', name:'بعدية العشاء', sub:'ركعتان', icon:'🌃'},
+  {id:'witr', name:'الوتر', sub:'ركعة فأكثر', icon:'🌙'},
+  {id:'duha', name:'صلاة الضحى', sub:'ركعتان فأكثر', icon:'🌄'},
+];
+
+const ATHKAR = [
+  {id:'sabah', name:'أذكار الصباح', sub:'بعد الفجر', icon:'🌅'},
+  {id:'masaa', name:'أذكار المساء', sub:'بعد العصر', icon:'🌆'},
+  {id:'nawm', name:'أذكار النوم', sub:'قبل النوم', icon:'💤'},
+  {id:'istghfar', name:'الاستغفار', sub:'١٠٠ مرة', icon:'🤍'},
+  {id:'salawat', name:'الصلاة على النبي ﷺ', sub:'١٠٠ مرة', icon:'💛'},
+  {id:'tasbeeh', name:'التسبيح', sub:'سبحان الله ٣٣', icon:'📿'},
+];
+
+const EXTRA = [
+  {id:'qiyam', name:'قيام الليل', sub:'ركعتان فأكثر', icon:'⭐'},
+  {id:'sawm_mon', name:'صيام الاثنين', sub:'إن كان اثنين', icon:'📅'},
+  {id:'sawm_thu', name:'صيام الخميس', sub:'إن كان خميس', icon:'📅'},
+  {id:'silah', name:'صلة الرحم', sub:'اتصال أو زيارة', icon:'❤️'},
+];
+
+const AWARDS_DEF = [
+  {id:'s7', icon:'🔥', name:'أسبوع نور', desc:'٧ أيام متتالية', target:7, type:'streak'},
+  {id:'s30', icon:'⭐', name:'شهر الثبات', desc:'٣٠ يوماً متتالية', target:30, type:'streak'},
+  {id:'k10', icon:'💰', name:'يد مفتوحة', desc:'١٠ أعمال خير', target:10, type:'kheir'},
+  {id:'q50', icon:'📖', name:'قارئ القرآن', desc:'٥٠ صفحة مقروءة', target:50, type:'quran'},
+];
+
+// ======================================================
+// LOCAL SESSION (just remembers who's logged in on this device)
+// ======================================================
+let SESSION = {};
+function loadSession(){ try{ SESSION = JSON.parse(localStorage.getItem('noor_session')||'{}'); }catch(e){ SESSION={}; } }
+function saveSession(){ localStorage.setItem('noor_session', JSON.stringify(SESSION)); }
+loadSession();
+
+// ======================================================
+// APP STATE (loaded fresh from Supabase each time)
+// ======================================================
+let currentUser = null;       // { id, name, role, avatar, house_code }
+let currentHouse = null;      // { code, name }
+let familyMembers = [];        // all members in the house
+let todayIbadah = {};          // { member_id: { item_id: true } }
+let todayQuran = {};            // { member_id: pages }
+let kheirLogCache = [];
+let deceasedCache = [];
+let deedsCache = {};            // { deceased_id: [deed_type,...] }
+let streaksCache = {};          // { member_id: current_streak }
+let pendingHouseSetup = null;
+let deedTargetId = null;
+let whoSel = null;
+
+const today = new Date().toISOString().split('T')[0];
+const monthPrefix = today.substring(0,7);
+
+function showLoading(show){
+  document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+}
+
+// ======================================================
+// PWA INSTALL
+// ======================================================
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function detectPlatform(){
+  const ua = navigator.userAgent || '';
+  if(/iPhone|iPad|iPod/.test(ua)) return 'ios';
+  return 'android';
+}
+function maybeShowInstallBanner(){
+  if(isStandalone()) return; // already installed, don't nag
+  const dismissed = localStorage.getItem('noor_install_dismissed');
+  if(dismissed) return;
+  const banner = document.getElementById('install-banner');
+  if(banner) banner.style.display = 'flex';
+}
+function openInstallModal(){
+  setPlatformTab(detectPlatform());
+  document.getElementById('install-modal').classList.add('open');
+}
+function setPlatformTab(p){
+  document.getElementById('ptab-ios').classList.toggle('active', p==='ios');
+  document.getElementById('ptab-android').classList.toggle('active', p==='android');
+  document.getElementById('install-steps-ios').style.display = p==='ios' ? 'block' : 'none';
+  document.getElementById('install-steps-android').style.display = p==='android' ? 'block' : 'none';
+}
+
+// ======================================================
+// STARS
+// ======================================================
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.className='star';
+    const sz=Math.random()*2+0.5;
+    el.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--o:${0.15+Math.random()*0.4}`;
+    c.appendChild(el);
+  }
+})();
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ======================================================
+// SETUP — CREATE HOUSE
+// ======================================================
+function goSetup(){ showPage('page-setup'); pendingHouseSetup = { members: [] }; renderFamChips(); }
+function goJoin(){
+  verifiedJoinHouse = null;
+  document.getElementById('join-code-input').value='';
+  document.getElementById('join-name-input').value='';
+  document.getElementById('join-role-input').value='';
+  showPage('page-join');
+}
+
+function renderFamChips(){
+  document.getElementById('fam-chip-row').innerHTML = pendingHouseSetup.members.map((m,i)=>`
+    <div class="fam-chip"><button onclick="removeMemberSetup(${i})">×</button>${m.name}</div>
+  `).join('');
+}
+function addMemberSetup(){
+  const inp = document.getElementById('nm-inp');
+  const nm = inp.value.trim();
+  if(!nm) return;
+  pendingHouseSetup.members.push({ name:nm, role:'فرد', avatar:AVATARS[pendingHouseSetup.members.length % AVATARS.length] });
+  inp.value='';
+  renderFamChips();
+}
+function removeMemberSetup(i){ pendingHouseSetup.members.splice(i,1); renderFamChips(); }
+
+async function createHouse(){
+  const hn = document.getElementById('house-name-input').value.trim();
+  const yn = document.getElementById('your-name-input').value.trim();
+  if(!hn){ showToast('أدخل اسم البيت'); return; }
+  if(!yn){ showToast('أدخل اسمك'); return; }
+
+  showLoading(true);
+  try{
+    const code = Math.floor(100000+Math.random()*900000).toString();
+
+    const { error: houseErr } = await sb.from('houses').insert({ code, name: hn });
+    if(houseErr) throw houseErr;
+
+    const ownerRow = { house_code: code, name: yn, role: 'صاحب البيت', avatar: AVATARS[0] };
+    const extraRows = pendingHouseSetup.members.map((m,i)=>({ house_code: code, name: m.name, role: m.role, avatar: AVATARS[(i+1) % AVATARS.length] }));
+
+    const { data: inserted, error: memErr } = await sb.from('members').insert([ownerRow, ...extraRows]).select();
+    if(memErr) throw memErr;
+
+    const owner = inserted.find(m=>m.name===yn && m.role==='صاحب البيت') || inserted[0];
+
+    SESSION = { member_id: owner.id, house_code: code };
+    saveSession();
+    currentUser = owner;
+    currentHouse = { code, name: hn };
+
+    document.getElementById('house-code-display').textContent = code;
+    showLoading(false);
+    showPage('page-code');
+  } catch(err){
+    showLoading(false);
+    showToast('حصل خطأ، تأكد من الاتصال 🌙');
+    console.error(err);
+  }
+}
+
+function finishSetup(){ enterMain(); }
+
+// ======================================================
+// JOIN EXISTING HOUSE — STEP 1: VERIFY CODE
+// ======================================================
+let verifiedJoinHouse = null;
+
+async function verifyJoinCode(){
+  const code = document.getElementById('join-code-input').value.trim();
+  if(code.length!==6){ showToast('الكود ٦ أرقام'); return; }
+
+  showLoading(true);
+  try{
+    const { data: house, error: houseErr } = await sb.from('houses').select('*').eq('code', code).maybeSingle();
+    if(houseErr) throw houseErr;
+    if(!house){ showLoading(false); showToast('الكود غير صحيح، تأكد منه 🌙'); return; }
+
+    verifiedJoinHouse = house;
+    document.getElementById('join-house-found').textContent = 'بيت ' + house.name;
+    showLoading(false);
+    showPage('page-join-confirm');
+  } catch(err){
+    showLoading(false);
+    showToast('حصل خطأ، تأكد من الاتصال 🌙');
+    console.error(err);
+  }
+}
+
+// ======================================================
+// JOIN EXISTING HOUSE — STEP 2: SAVE NAME + ROLE
+// ======================================================
+async function doJoin(){
+  const name = document.getElementById('join-name-input').value.trim();
+  const role = document.getElementById('join-role-input').value.trim();
+  if(!verifiedJoinHouse){ showPage('page-join'); return; }
+  if(!name){ showToast('أدخل اسمك'); return; }
+
+  showLoading(true);
+  try{
+    const code = verifiedJoinHouse.code;
+    const { data: newMember, error: memErr } = await sb.from('members').insert({
+      house_code: code, name, role: role || 'فرد', avatar: AVATARS[Math.floor(Math.random()*AVATARS.length)]
+    }).select().single();
+    if(memErr) throw memErr;
+
+    SESSION = { member_id: newMember.id, house_code: code };
+    saveSession();
+    currentUser = newMember;
+    currentHouse = verifiedJoinHouse;
+    showLoading(false);
+    enterMain();
+  } catch(err){
+    showLoading(false);
+    showToast('حصل خطأ، تأكد من الاتصال 🌙');
+    console.error(err);
+  }
+}
+
+// ======================================================
+// WHO SCREEN (switch member within same house)
+// ======================================================
+async function goWho(){
+  showLoading(true);
+  try{
+    await loadFamilyMembers(currentHouse.code);
+    document.getElementById('who-house-name').textContent = 'بيت ' + currentHouse.name;
+    document.getElementById('who-grid').innerHTML = familyMembers.map(m=>`
+      <div class="who-card" id="wc_${m.id}" onclick="selectWho('${m.id}')">
+        <div class="who-card-avatar">${m.avatar}</div>
+        <div class="who-card-name">${m.name}</div>
+        <div class="who-card-role">${m.role}</div>
+      </div>
+    `).join('');
+    showLoading(false);
+    showPage('page-who');
+  } catch(err){
+    showLoading(false);
+    showToast('حصل خطأ بالاتصال 🌙');
+  }
+}
+function selectWho(id){
+  whoSel=id;
+  document.querySelectorAll('.who-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('wc_'+id)?.classList.add('sel');
+}
+function enterApp(){
+  if(!whoSel){ showToast('اختر اسمك أولاً 🌙'); return; }
+  currentUser = familyMembers.find(m=>m.id===whoSel);
+  if(!currentUser) return;
+  SESSION = { member_id: currentUser.id, house_code: currentHouse.code };
+  saveSession();
+  enterMain();
+}
+
+// ======================================================
+// DATA LOADERS
+// ======================================================
+async function loadFamilyMembers(houseCode){
+  const { data, error } = await sb.from('members').select('*').eq('house_code', houseCode).order('created_at');
+  if(error) throw error;
+  familyMembers = data || [];
+}
+
+async function loadTodayIbadahForAll(houseCode){
+  const memberIds = familyMembers.map(m=>m.id);
+  if(!memberIds.length) { todayIbadah = {}; return; }
+  const { data, error } = await sb.from('ibadah_log').select('member_id,item_id,done').eq('log_date', today).in('member_id', memberIds);
+  if(error) throw error;
+  todayIbadah = {};
+  (data||[]).forEach(row=>{
+    if(!todayIbadah[row.member_id]) todayIbadah[row.member_id] = {};
+    todayIbadah[row.member_id][row.item_id] = row.done;
+  });
+}
+
+async function loadTodayQuranForAll(){
+  const memberIds = familyMembers.map(m=>m.id);
+  if(!memberIds.length){ todayQuran = {}; return; }
+  const { data, error } = await sb.from('quran_log').select('member_id,pages').eq('log_date', today).in('member_id', memberIds);
+  if(error) throw error;
+  todayQuran = {};
+  (data||[]).forEach(row=>{ todayQuran[row.member_id] = row.pages; });
+}
+
+async function loadStreaks(){
+  const memberIds = familyMembers.map(m=>m.id);
+  if(!memberIds.length){ streaksCache = {}; return; }
+  const { data, error } = await sb.from('streaks').select('*').in('member_id', memberIds);
+  if(error) throw error;
+  streaksCache = {};
+  (data||[]).forEach(row=>{ streaksCache[row.member_id] = row; });
+}
+
+async function loadKheirLog(houseCode){
+  const { data, error } = await sb.from('kheir_log').select('*').eq('house_code', houseCode).order('created_at',{ascending:false}).limit(50);
+  if(error) throw error;
+  kheirLogCache = data || [];
+}
+
+async function loadDeceased(houseCode){
+  const { data, error } = await sb.from('deceased').select('*').eq('house_code', houseCode).order('created_at');
+  if(error) throw error;
+  deceasedCache = data || [];
+  const decIds = deceasedCache.map(d=>d.id);
+  if(decIds.length){
+    const { data: deeds } = await sb.from('deeds_log').select('*').in('deceased_id', decIds);
+    deedsCache = {};
+    (deeds||[]).forEach(d=>{
+      if(!deedsCache[d.deceased_id]) deedsCache[d.deceased_id]=[];
+      deedsCache[d.deceased_id].push(d.deed_type);
+    });
+  } else { deedsCache = {}; }
+}
+
+async function loadAllData(){
+  await loadFamilyMembers(currentHouse.code);
+  await Promise.all([
+    loadTodayIbadahForAll(currentHouse.code),
+    loadTodayQuranForAll(),
+    loadStreaks(),
+    loadKheirLog(currentHouse.code),
+    loadDeceased(currentHouse.code)
+  ]);
+}
+
+// ======================================================
+// INIT
+// ======================================================
+async function enterMain(){
+  showLoading(true);
+  try{
+    await loadAllData();
+    document.getElementById('top-av').textContent = currentUser.avatar;
+    document.getElementById('top-nm').textContent = currentUser.name;
+    showPage('page-app');
+    renderDates();
+    switchTab('today');
+    maybeShowInstallBanner();
+    showLoading(false);
+  } catch(err){
+    showLoading(false);
+    showToast('تعذر تحميل البيانات 🌙');
+    console.error(err);
+  }
+}
+
+(async function init(){
+  showLoading(true);
+  if(!SESSION.house_code || !SESSION.member_id){
+    showLoading(false);
+    showPage('page-onboard');
+    return;
+  }
+  try{
+    const { data: house } = await sb.from('houses').select('*').eq('code', SESSION.house_code).maybeSingle();
+    if(!house){ showLoading(false); showPage('page-onboard'); return; }
+    currentHouse = house;
+    await loadFamilyMembers(house.code);
+    currentUser = familyMembers.find(m=>m.id===SESSION.member_id);
+    if(!currentUser){ showLoading(false); await goWho(); return; }
+    await enterMain();
+  } catch(err){
+    showLoading(false);
+    showPage('page-onboard');
+    console.error(err);
+  }
+})();
+
+// ======================================================
+// DATES
+// ======================================================
+function renderDates(){
+  const now = new Date();
+  document.getElementById('hijri').textContent = new Intl.DateTimeFormat('ar-SA-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(now);
+  document.getElementById('miladi').textContent = new Intl.DateTimeFormat('ar-SA',{weekday:'long',day:'numeric',month:'long'}).format(now);
+}
+
+// ======================================================
+// STREAK
+// ======================================================
+function renderStreak(){
+  const streak = streaksCache[currentUser.id]?.current_streak || 0;
+  document.getElementById('streak-n').textContent = streak;
+  const msgs=['ابدأ يومك بخير ✨','الله يثبتك 🤍','ما شاء الله، استمر 🌟','أنت في طريق النور ⭐','الله يبارك فيك 🌙','سبحان الله، الثبات 💫'];
+  document.getElementById('streak-msg').textContent = msgs[Math.min(streak,msgs.length-1)];
+}
+
+async function tryUpdateStreak(){
+  const all=[...SALAH,...ATHKAR];
+  const doneCount = all.filter(i=>todayIbadah[currentUser.id]?.[i.id]).length;
+  if(doneCount>=5){
+    const existing = streaksCache[currentUser.id];
+    const lastDay = existing?.last_active_date;
+    if(lastDay !== today){
+      const newStreak = (existing?.current_streak || 0) + 1;
+      const { error } = await sb.from('streaks').upsert({ member_id: currentUser.id, current_streak: newStreak, last_active_date: today });
+      if(!error){
+        streaksCache[currentUser.id] = { member_id: currentUser.id, current_streak: newStreak, last_active_date: today };
+        renderStreak();
+      }
+    }
+  }
+}
+
+// ======================================================
+// IBADAH GRID
+// ======================================================
+function buildGrid(containerId, items, countId){
+  const cont = document.getElementById(containerId);
+  cont.innerHTML = items.map(item=>{
+    const done = !!todayIbadah[currentUser.id]?.[item.id];
+    return `<div class="icard ${done?'done':''}" onclick="toggleItem('${item.id}','${containerId}')">
+      <div class="icard-check">${done?'✓':''}</div>
+      <span class="icard-icon">${item.icon}</span>
+      <div class="icard-name">${item.name}</div>
+      <div class="icard-sub">${item.sub}</div>
+    </div>`;
+  }).join('');
+  if(countId){
+    const done = items.filter(i=>!!todayIbadah[currentUser.id]?.[i.id]).length;
+    document.getElementById(countId).textContent = done>0?`${done}/${items.length}`:'';
+  }
+}
+
+function getItemsFor(containerId){
+  if(containerId==='grid-salah') return SALAH;
+  if(containerId==='grid-athkar') return ATHKAR;
+  if(containerId==='grid-extra') return EXTRA;
+  return [];
+}
+
+async function toggleItem(id, containerId){
+  const items = getItemsFor(containerId);
+  const item = items.find(i=>i.id===id);
+  const wasDone = !!todayIbadah[currentUser.id]?.[id];
+  const now = !wasDone;
+
+  // optimistic UI update
+  if(!todayIbadah[currentUser.id]) todayIbadah[currentUser.id] = {};
+  todayIbadah[currentUser.id][id] = now;
+  renderToday();
+  if(now) showToast(`${item?.icon||'✓'} ${item?.name||''}`);
+
+  try{
+    const { error } = await sb.from('ibadah_log').upsert({
+      member_id: currentUser.id, item_id: id, log_date: today, done: now
+    }, { onConflict: 'member_id,item_id,log_date' });
+    if(error) throw error;
+    if(now) await tryUpdateStreak();
+    await loadTodayIbadahForAll(currentHouse.code);
+    renderFamMini();
+  } catch(err){
+    // revert on failure
+    todayIbadah[currentUser.id][id] = wasDone;
+    renderToday();
+    showToast('تعذر الحفظ، حاول مرة أخرى 🌙');
+    console.error(err);
+  }
+}
+
+function renderToday(){
+  buildGrid('grid-salah', SALAH, 'cnt-salah');
+  buildGrid('grid-athkar', ATHKAR, 'cnt-athkar');
+  buildGrid('grid-extra', EXTRA, 'cnt-extra');
+  renderQuran();
+  renderKheirMini();
+  renderFamMini();
+  renderStreak();
+}
+
+// ======================================================
+// QURAN
+// ======================================================
+function renderQuran(){
+  const read = todayQuran[currentUser.id] || 0;
+  document.getElementById('q-read').textContent = read;
+  document.getElementById('q-goal').textContent = 5;
+  document.getElementById('q-bar').style.width = Math.min(100,(read/5)*100)+'%';
+}
+
+async function qPage(n){
+  const current = todayQuran[currentUser.id] || 0;
+  const v = Math.max(0, current + n);
+  todayQuran[currentUser.id] = v;
+  renderQuran();
+  if(n>0) showToast(`📖 ${v} صفحة اليوم`);
+
+  try{
+    const { error } = await sb.from('quran_log').upsert({
+      member_id: currentUser.id, log_date: today, pages: v
+    }, { onConflict: 'member_id,log_date' });
+    if(error) throw error;
+  } catch(err){
+    todayQuran[currentUser.id] = current;
+    renderQuran();
+    showToast('تعذر الحفظ 🌙');
+    console.error(err);
+  }
+}
+
+// ======================================================
+// KHEIR
+// ======================================================
+function openKheirModal(){
+  const chips=[...familyMembers,...deceasedCache.map(d=>({id:'d_'+d.id,name:'🤍 '+d.name}))];
+  chips.push({id:'all',name:'👨‍👩‍👧‍👦 العائلة كلها'});
+  document.getElementById('kheir-hdiya-chips').innerHTML = chips.map(m=>`<div class="mchip" onclick="this.classList.toggle('sel')">${m.name}</div>`).join('');
+  document.getElementById('kheir-amount').value='';
+  document.getElementById('kheir-modal').classList.add('open');
+}
+
+async function saveKheir(){
+  const type=document.getElementById('kheir-type').value;
+  const amount=parseFloat(document.getElementById('kheir-amount').value)||0;
+  const hdiya=[...document.querySelectorAll('#kheir-hdiya-chips .mchip.sel')].map(e=>e.textContent.trim());
+
+  try{
+    const { error } = await sb.from('kheir_log').insert({
+      house_code: currentHouse.code,
+      member_id: currentUser.id,
+      member_name: currentUser.name,
+      type, amount, hdiya, log_date: today
+    });
+    if(error) throw error;
+    document.getElementById('kheir-modal').classList.remove('open');
+    await loadKheirLog(currentHouse.code);
+    renderKheirMini();
+    renderKheirPage();
+    showToast('🤲 سُجّل في ميزان حسناتكم');
+  } catch(err){
+    showToast('تعذر الحفظ، حاول مرة أخرى 🌙');
+    console.error(err);
+  }
+}
+
+function renderKheirMini(){
+  const mlog = kheirLogCache.filter(e=>e.log_date.startsWith(monthPrefix));
+  const el=document.getElementById('kheir-mini-count');
+  if(el) el.textContent=mlog.length;
+}
+
+function renderKheirPage(){
+  const mlog = kheirLogCache.filter(e=>e.log_date.startsWith(monthPrefix));
+  document.getElementById('kheir-total').textContent=mlog.length;
+  const logEl=document.getElementById('kheir-log');
+  logEl.innerHTML = kheirLogCache.slice(0,15).map(e=>`
+    <div class="kheir-log-item">
+      <span class="kli-icon">${e.type.split(' ')[0]}</span>
+      <div class="kli-text">
+        <div class="kli-type">${e.type.replace(/^[^\s]+ /,'')}</div>
+        ${e.hdiya?.length?`<div class="kli-hdiya">→ ${e.hdiya.join('، ')}</div>`:''}
+      </div>
+      <div class="kli-right"><div class="kli-by">${e.member_name}</div><div class="kli-date">${e.log_date}</div></div>
+    </div>`).join('') || '<div style="color:var(--text-faint);font-size:13px;text-align:center;padding:30px">لا يزال الصندوق ينتظر أول خيراتكم 🤍</div>';
+  renderDecList();
+}
+
+// ======================================================
+// ARHAM / DECEASED
+// ======================================================
+function openDecModal(){ document.getElementById('dec-modal').classList.add('open'); }
+
+async function saveDec(){
+  const name=document.getElementById('dec-name').value.trim();
+  const rel=document.getElementById('dec-rel').value.trim();
+  if(!name){ showToast('أدخل الاسم'); return; }
+  try{
+    const { error } = await sb.from('deceased').insert({ house_code: currentHouse.code, name, relation: rel||'عزيز' });
+    if(error) throw error;
+    document.getElementById('dec-modal').classList.remove('open');
+    document.getElementById('dec-name').value='';
+    document.getElementById('dec-rel').value='';
+    await loadDeceased(currentHouse.code);
+    renderDecList();
+    showToast('🤍 أضيف إلى سجل الأرحام');
+  } catch(err){
+    showToast('تعذر الحفظ 🌙');
+    console.error(err);
+  }
+}
+
+function renderDecList(){
+  const list=document.getElementById('dec-list');
+  list.innerHTML = deceasedCache.length ? deceasedCache.map(d=>{
+    const deeds = deedsCache[d.id] || [];
+    return `<div class="dec-card" onclick="openDeedModal('${d.id}','${d.name}')">
+      <div class="dec-top">
+        <span class="dec-icon">🤍</span>
+        <div><div class="dec-name">${d.name}</div><div class="dec-rel">${d.relation} — رحمه الله</div></div>
+      </div>
+      ${deeds.length?`<div class="dec-deeds">${deeds.slice(-4).map(x=>`<div class="deed-tag">${x}</div>`).join('')}</div>`:`<div class="dec-empty">اضغط لتهدي له عملًا صالحًا 🤍</div>`}
+    </div>`;
+  }).join('') : '<div style="color:var(--text-faint);font-size:13px;text-align:center;padding:20px">أضف من رحلوا لتُحيي ذكرهم بالدعاء والصدقة 🤍</div>';
+}
+
+function openDeedModal(id,name){
+  deedTargetId=id;
+  document.getElementById('deed-target').textContent=name;
+  document.getElementById('deed-modal').classList.add('open');
+}
+
+async function saveDeed(){
+  const type=document.getElementById('deed-type').value;
+  try{
+    const { error } = await sb.from('deeds_log').insert({ deceased_id: deedTargetId, deed_type: type });
+    if(error) throw error;
+    document.getElementById('deed-modal').classList.remove('open');
+    await loadDeceased(currentHouse.code);
+    renderDecList();
+    showToast('🌸 وصل الأجر بإذن الله');
+  } catch(err){
+    showToast('تعذر الحفظ 🌙');
+    console.error(err);
+  }
+}
+
+// ======================================================
+// FAMILY MINI (today screen)
+// ======================================================
+function renderFamMini(){
+  const all=[...SALAH,...ATHKAR];
+  const list=document.getElementById('fam-mini-list');
+  if(!list) return;
+  list.innerHTML = familyMembers.map(m=>{
+    const done = all.filter(i=>!!todayIbadah[m.id]?.[i.id]).length;
+    const pct=Math.round((done/all.length)*100);
+    return `<div class="fam-row">
+      <span class="fam-av">${m.avatar}</span>
+      <div class="fam-inf"><div class="fam-nm">${m.name}</div><div class="fam-sc">${done} من ${all.length}</div></div>
+      <div class="fam-bar-wrap"><div class="fam-bar" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ======================================================
+// HOUSE / MORE PAGE
+// ======================================================
+function renderHouse(){
+  document.getElementById('house-display-name').textContent='بيت '+currentHouse.name;
+  document.getElementById('house-display-code').textContent=currentHouse.code;
+  const all=[...SALAH,...ATHKAR,...EXTRA];
+  document.getElementById('house-members-list').innerHTML = familyMembers.map(m=>{
+    const done = all.filter(i=>!!todayIbadah[m.id]?.[i.id]).length;
+    return `<div class="house-member">
+      <span class="hm-av">${m.avatar}</span>
+      <div class="hm-inf"><div class="hm-name">${m.name}</div><div class="hm-role">${m.role}</div></div>
+      <div style="text-align:center"><div class="hm-score">${done}</div><div class="hm-score-lbl">/ ${all.length}</div></div>
+    </div>`;
+  }).join('');
+  renderAwards();
+}
+
+function renderAwards(){
+  const streak = streaksCache[currentUser?.id]?.current_streak || 0;
+  const kheirCount = kheirLogCache.filter(e=>e.member_id===currentUser?.id).length;
+  const quranTotal = todayQuran[currentUser?.id] || 0; // simplified: today's count (could be extended to historical sum)
+  document.getElementById('awards-list').innerHTML = AWARDS_DEF.map(a=>{
+    let prog=0;
+    if(a.type==='streak') prog=streak;
+    if(a.type==='kheir') prog=kheirCount;
+    if(a.type==='quran') prog=quranTotal;
+    const pct=Math.min(100,(prog/a.target)*100);
+    const earned=pct>=100;
+    return `<div class="award-card ${earned?'earned':''}">
+      <div class="award-top">
+        <span class="award-icon">${a.icon}</span>
+        <div><div class="award-name">${a.name}</div><div class="award-desc">${a.desc}</div></div>
+        ${earned?'<span class="award-earned-badge">✅</span>':''}
+      </div>
+      <div class="pbar"><div class="pbar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function shareCode(){
+  const text=`انضم لبيتنا في تطبيق نور 🌙\nبيت ${currentHouse.name}\nالكود: ${currentHouse.code}\n\nنتابع عباداتنا مع بعض ونبني صندوق خير مشترك 🤲`;
+  if(navigator.share){ navigator.share({text}); }
+  else { navigator.clipboard?.writeText(text); showToast('تم نسخ الكود 📋'); }
+}
+
+function resetApp(){
+  if(confirm('هل تريد تسجيل الخروج من هذا الجهاز؟ بياناتك محفوظة في السحابة ولن تُمسح.')){
+    localStorage.removeItem('noor_session');
+    location.reload();
+  }
+}
+
+// ======================================================
+// TAB SWITCHING
+// ======================================================
+function switchTab(tab){
+  ['today','kheir','more'].forEach(t=>{
+    document.getElementById('scroll-'+t).style.display = t===tab?'block':'none';
+    document.getElementById('nav-'+t)?.classList.toggle('active', t===tab);
+  });
+  if(tab==='today') renderToday();
+  if(tab==='kheir') renderKheirPage();
+  if(tab==='more') renderHouse();
+}
+
+// ======================================================
+// TOAST
+// ======================================================
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+</script>
+<div class="modal-overlay" id="install-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">📲 ثبّت نور على شاشتك</div>
+    <div class="platform-tabs">
+      <div class="platform-tab" id="ptab-ios" onclick="setPlatformTab('ios')">🍎 آيفون</div>
+      <div class="platform-tab" id="ptab-android" onclick="setPlatformTab('android')">🤖 أندرويد</div>
+    </div>
+
+    <div id="install-steps-ios" style="display:none">
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="install-step-num">١</div>
+          <div class="install-step-text">اضغط على زر <b>المشاركة</b> ⬆️ في أسفل شاشة سفاري (Safari)</div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">٢</div>
+          <div class="install-step-text">مرّر لتحت ودوّر على خيار <b>"إضافة إلى الشاشة الرئيسية"</b><br><span style="color:var(--text-dim);font-size:12px">Add to Home Screen</span></div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">٣</div>
+          <div class="install-step-text">اضغط <b>"إضافة"</b> في الأعلى — وبكذا تظهر أيقونة 🌙 نور بشاشتك</div>
+        </div>
+      </div>
+      <div style="background:var(--gold-glow);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:12px;color:var(--text-dim);line-height:1.6">
+        ⚠️ لازم تفتح الرابط من <b>متصفح سفاري</b> نفسه (مو من داخل واتساب أو أي تطبيق آخر) عشان يظهر لك خيار الإضافة.
+      </div>
+    </div>
+
+    <div id="install-steps-android" style="display:none">
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="install-step-num">١</div>
+          <div class="install-step-text">اضغط على <b>القائمة</b> ⋮ في أعلى يمين متصفح كروم (Chrome)</div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">٢</div>
+          <div class="install-step-text">دوّر على خيار <b>"تثبيت التطبيق"</b> أو <b>"إضافة إلى الشاشة الرئيسية"</b><br><span style="color:var(--text-dim);font-size:12px">Install app / Add to Home screen</span></div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">٣</div>
+          <div class="install-step-text">اضغط <b>"تثبيت"</b> — وبكذا تظهر أيقونة 🌙 نور بشاشتك مثل أي تطبيق</div>
+        </div>
+      </div>
+      <div style="background:var(--gold-glow);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:12px;color:var(--text-dim);line-height:1.6">
+        💡 بعض الأجهزة تطلع لك نافذة تلقائية تسأل "إضافة نور للشاشة الرئيسية؟" — وقتها فقط اضغط إضافة.
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
